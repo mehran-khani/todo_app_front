@@ -101,11 +101,16 @@ class RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 20),
               BlocConsumer<AuthenticationCubit, AuthenticationState>(
-                listener: (context, state) {
+                listener: (context, state) async {
                   if (state is Success) {
+                    // Show the success message in a SnackBar
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
+                      SnackBar(
+                        content: Text(state.message),
+                      ),
                     );
+
+                    Navigator.pushReplacementNamed(context, '/home');
                   } else if (state is Failure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.error)),

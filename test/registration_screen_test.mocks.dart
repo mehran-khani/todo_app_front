@@ -5,13 +5,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:bloc/bloc.dart' as _i6;
+import 'package:flutter/src/widgets/navigator.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i5;
 import 'package:to_do_application/services/authentication/auth_service.dart'
     as _i2;
-import 'package:to_do_application/services/authentication/cubit/authentication_cubit.dart'
-    as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -26,24 +23,10 @@ import 'package:to_do_application/services/authentication/cubit/authentication_c
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeAuthService_0 extends _i1.SmartFake implements _i2.AuthService {
-  _FakeAuthService_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
 /// A class which mocks [AuthService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAuthService extends _i1.Mock implements _i2.AuthService {
-  MockAuthService() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i3.Future<Map<String, dynamic>> register(
     String? email,
@@ -63,299 +46,134 @@ class MockAuthService extends _i1.Mock implements _i2.AuthService {
         ),
         returnValue:
             _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+        returnValueForMissingStub:
+            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i3.Future<Map<String, dynamic>>);
-}
-
-/// A class which mocks [AuthService].
-///
-/// See the documentation for Mockito's code generation for more information.
-class CustomMockAuthService extends _i1.Mock implements _i2.AuthService {
-  CustomMockAuthService() {
-    _i1.throwOnMissingStub(this);
-  }
 
   @override
-  _i3.Future<Map<String, dynamic>> register(
+  _i3.Future<Map<String, dynamic>> login(
     String? email,
     String? password,
-    String? confirmPassword,
-    String? name,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #register,
+          #login,
           [
             email,
             password,
-            confirmPassword,
-            name,
           ],
         ),
         returnValue:
             _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+        returnValueForMissingStub:
+            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i3.Future<Map<String, dynamic>>);
+
+  @override
+  _i3.Future<Map<String, dynamic>> refreshToken(String? refreshToken) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #refreshToken,
+          [refreshToken],
+        ),
+        returnValue:
+            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+        returnValueForMissingStub:
+            _i3.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
       ) as _i3.Future<Map<String, dynamic>>);
 }
 
-/// A class which mocks [AuthenticationCubit].
+/// A class which mocks [NavigatorObserver].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthenticationCubit extends _i1.Mock
-    implements _i4.AuthenticationCubit {
-  MockAuthenticationCubit() {
-    _i1.throwOnMissingStub(this);
-  }
-
+class MockNavigatorObserver extends _i1.Mock implements _i4.NavigatorObserver {
   @override
-  _i2.AuthService get authService => (super.noSuchMethod(
-        Invocation.getter(#authService),
-        returnValue: _FakeAuthService_0(
-          this,
-          Invocation.getter(#authService),
-        ),
-      ) as _i2.AuthService);
-
-  @override
-  set authService(_i2.AuthService? _authService) => super.noSuchMethod(
-        Invocation.setter(
-          #authService,
-          _authService,
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  _i4.AuthenticationState get state => (super.noSuchMethod(
-        Invocation.getter(#state),
-        returnValue: _i5.dummyValue<_i4.AuthenticationState>(
-          this,
-          Invocation.getter(#state),
-        ),
-      ) as _i4.AuthenticationState);
-
-  @override
-  _i3.Stream<_i4.AuthenticationState> get stream => (super.noSuchMethod(
-        Invocation.getter(#stream),
-        returnValue: _i3.Stream<_i4.AuthenticationState>.empty(),
-      ) as _i3.Stream<_i4.AuthenticationState>);
-
-  @override
-  bool get isClosed => (super.noSuchMethod(
-        Invocation.getter(#isClosed),
-        returnValue: false,
-      ) as bool);
-
-  @override
-  _i3.Future<void> register({
-    required String? email,
-    required String? password,
-    required String? confirmPassword,
-    required String? name,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #register,
-          [],
-          {
-            #email: email,
-            #password: password,
-            #confirmPassword: confirmPassword,
-            #name: name,
-          },
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-
-  @override
-  void emit(_i4.AuthenticationState? state) => super.noSuchMethod(
-        Invocation.method(
-          #emit,
-          [state],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void onChange(_i6.Change<_i4.AuthenticationState>? change) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #onChange,
-          [change],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void addError(
-    Object? error, [
-    StackTrace? stackTrace,
-  ]) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #addError,
-          [
-            error,
-            stackTrace,
-          ],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void onError(
-    Object? error,
-    StackTrace? stackTrace,
+  void didPush(
+    _i4.Route<dynamic>? route,
+    _i4.Route<dynamic>? previousRoute,
   ) =>
       super.noSuchMethod(
         Invocation.method(
-          #onError,
+          #didPush,
           [
-            error,
-            stackTrace,
+            route,
+            previousRoute,
           ],
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  _i3.Future<void> close() => (super.noSuchMethod(
-        Invocation.method(
-          #close,
-          [],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-}
-
-/// A class which mocks [AuthenticationCubit].
-///
-/// See the documentation for Mockito's code generation for more information.
-class CustomMockAuthenticationCubit extends _i1.Mock
-    implements _i4.AuthenticationCubit {
-  CustomMockAuthenticationCubit() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i2.AuthService get authService => (super.noSuchMethod(
-        Invocation.getter(#authService),
-        returnValue: _FakeAuthService_0(
-          this,
-          Invocation.getter(#authService),
-        ),
-      ) as _i2.AuthService);
-
-  @override
-  set authService(_i2.AuthService? _authService) => super.noSuchMethod(
-        Invocation.setter(
-          #authService,
-          _authService,
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  _i4.AuthenticationState get state => (super.noSuchMethod(
-        Invocation.getter(#state),
-        returnValue: _i5.dummyValue<_i4.AuthenticationState>(
-          this,
-          Invocation.getter(#state),
-        ),
-      ) as _i4.AuthenticationState);
-
-  @override
-  _i3.Stream<_i4.AuthenticationState> get stream => (super.noSuchMethod(
-        Invocation.getter(#stream),
-        returnValue: _i3.Stream<_i4.AuthenticationState>.empty(),
-      ) as _i3.Stream<_i4.AuthenticationState>);
-
-  @override
-  bool get isClosed => (super.noSuchMethod(
-        Invocation.getter(#isClosed),
-        returnValue: false,
-      ) as bool);
-
-  @override
-  _i3.Future<void> register({
-    required String? email,
-    required String? password,
-    required String? confirmPassword,
-    required String? name,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #register,
-          [],
-          {
-            #email: email,
-            #password: password,
-            #confirmPassword: confirmPassword,
-            #name: name,
-          },
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-
-  @override
-  void emit(_i4.AuthenticationState? state) => super.noSuchMethod(
-        Invocation.method(
-          #emit,
-          [state],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void onChange(_i6.Change<_i4.AuthenticationState>? change) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #onChange,
-          [change],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void addError(
-    Object? error, [
-    StackTrace? stackTrace,
-  ]) =>
-      super.noSuchMethod(
-        Invocation.method(
-          #addError,
-          [
-            error,
-            stackTrace,
-          ],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void onError(
-    Object? error,
-    StackTrace? stackTrace,
+  void didPop(
+    _i4.Route<dynamic>? route,
+    _i4.Route<dynamic>? previousRoute,
   ) =>
       super.noSuchMethod(
         Invocation.method(
-          #onError,
+          #didPop,
           [
-            error,
-            stackTrace,
+            route,
+            previousRoute,
           ],
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  _i3.Future<void> close() => (super.noSuchMethod(
+  void didRemove(
+    _i4.Route<dynamic>? route,
+    _i4.Route<dynamic>? previousRoute,
+  ) =>
+      super.noSuchMethod(
         Invocation.method(
-          #close,
+          #didRemove,
+          [
+            route,
+            previousRoute,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didReplace({
+    _i4.Route<dynamic>? newRoute,
+    _i4.Route<dynamic>? oldRoute,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #didReplace,
+          [],
+          {
+            #newRoute: newRoute,
+            #oldRoute: oldRoute,
+          },
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didStartUserGesture(
+    _i4.Route<dynamic>? route,
+    _i4.Route<dynamic>? previousRoute,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #didStartUserGesture,
+          [
+            route,
+            previousRoute,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didStopUserGesture() => super.noSuchMethod(
+        Invocation.method(
+          #didStopUserGesture,
           [],
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValueForMissingStub: null,
+      );
 }

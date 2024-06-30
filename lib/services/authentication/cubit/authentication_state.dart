@@ -11,6 +11,8 @@ final class AuthenticationInitial extends AuthenticationState {}
 
 class Loading extends AuthenticationState {}
 
+class LoggedOut extends AuthenticationState {}
+
 class Success extends AuthenticationState {
   final String message;
 
