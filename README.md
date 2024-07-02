@@ -1,16 +1,26 @@
+
+---
+
 # to_do_application
 
-A new Flutter project.
+This is a Task Management application.
 
-## Getting Started
+## Features
+- Written in Flutter: The app is built using Flutter for cross-platform capabilities.
+- Authentication with Django:
+  - Following best practices for registration requiring email/password/confirm password/user name.
+  - Requires email verification.
+  - Login requires email and password and returns tokens in response.
+- Test-Driven Development (TDD): Ensures robust and reliable code.
+- Data Storage: Not implemented yet, but considering one of the options below:
+  - Firebase: For remote data storage.
+  - Hive: For local data storage.
 
-This project is a starting point for a Flutter application.
+## Roadmap
+- Task Management: Organize tasks into categories such as Today, Scheduled, All, Flagged, and Completed.
+- Task Editing: Edit tasks directly within the list.
+- Direct Task Addition: Add new tasks directly from the task list.
+- Responsive UI: User-friendly and responsive user interface.
+- Reminders: Set reminders for tasks to receive notifications.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---

@@ -13,6 +13,7 @@ import 'registration_screen_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<AuthService>(),
   MockSpec<NavigatorObserver>(),
+  MockSpec<SecureStorageService>()
 ])
 void main() {
   group(

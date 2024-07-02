@@ -177,3 +177,56 @@ class MockNavigatorObserver extends _i1.Mock implements _i4.NavigatorObserver {
         returnValueForMissingStub: null,
       );
 }
+
+/// A class which mocks [SecureStorageService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSecureStorageService extends _i1.Mock
+    implements _i2.SecureStorageService {
+  @override
+  _i3.Future<void> writeToken(
+    String? key,
+    String? value,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #writeToken,
+          [
+            key,
+            value,
+          ],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<String?> readToken(String? key) => (super.noSuchMethod(
+        Invocation.method(
+          #readToken,
+          [key],
+        ),
+        returnValue: _i3.Future<String?>.value(),
+        returnValueForMissingStub: _i3.Future<String?>.value(),
+      ) as _i3.Future<String?>);
+
+  @override
+  _i3.Future<void> deleteToken(String? key) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteToken,
+          [key],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> deleteAllTokens() => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAllTokens,
+          [],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+}

@@ -60,7 +60,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
   }
 
-  Future<bool> _refresh() async {
+  Future<bool> refresh() async {
+    emit(Loading());
+
     try {
       final refreshToken = await secureStorageService.readToken('refreshToken');
       final response = await authService.refreshToken(refreshToken!);
@@ -71,10 +73,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       await secureStorageService.writeToken('accessToken', newAccessToken);
       await secureStorageService.writeToken('refreshToken', newRefreshToken);
 
-      await checkAuthStatus();
-
       emit(Success(response['message']));
-      return false; // Refresh successful
+
+      return true; // Refresh successful
     } catch (e) {
       emit(Failure(e.toString()));
       return false; // Refresh failed
@@ -86,36 +87,65 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     emit(LoggedOut());
   }
 
-  Future<bool> _isAccessTokenValid() async {
+  Future<bool> isAccessTokenValid() async {
     final accessToken = await secureStorageService.readToken('accessToken');
-    if (accessToken != null) {
+
+    if (accessToken != null && accessToken.isNotEmpty) {
       try {
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+        final decodedToken = JwtDecoder.decode(accessToken);
+
         // Check expiration
         if (decodedToken['exp'] != null) {
           DateTime expirationDate =
               DateTime.fromMillisecondsSinceEpoch(decodedToken['exp'] * 1000);
           bool isTokenValid = DateTime.now().isBefore(expirationDate);
           return isTokenValid;
+        } else {
+          // Handle case where 'exp' is missing in token
+          print('Token does not contain expiration date.');
+          return false;
         }
-        return false;
       } catch (e) {
-        print(e.toString());
+        // Handle decoding errors
+        print('Error decoding token: $e');
         return false;
       }
+    } else {
+      // Handle case where accessToken is null or empty
+      print('Access token is null or empty.');
+      return false;
     }
-    return false;
   }
+
+  // Future<bool> isAccessTokenValid() async {
+  //   final accessToken = await secureStorageService.readToken('accessToken');
+  //   if (accessToken != null) {
+  //     try {
+  //       Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+  //       // Check expiration
+  //       if (decodedToken['exp'] != null) {
+  //         DateTime expirationDate =
+  //             DateTime.fromMillisecondsSinceEpoch(decodedToken['exp'] * 1000);
+  //         bool isTokenValid = DateTime.now().isBefore(expirationDate);
+  //         return isTokenValid;
+  //       }
+  //     } catch (e) {
+  //       print(e.toString());
+  //       return false;
+  //     }
+  //   }
+  //   return false;
+  // }
 
   Future<void> checkAuthStatus() async {
     try {
       final accessToken = await secureStorageService.readToken('accessToken');
       final refreshToken = await secureStorageService.readToken('refreshToken');
 
-      if (accessToken != null && await _isAccessTokenValid()) {
+      if (accessToken != null && await isAccessTokenValid()) {
         emit(const Success('Tokens are valid'));
-      } else if (refreshToken != null) {
-        final bool refreshed = await _refresh();
+      } else if (await isAccessTokenValid() == false && refreshToken != null) {
+        final bool refreshed = await refresh();
         if (refreshed) {
           emit(const Success('Token is refreshed'));
         } else {
