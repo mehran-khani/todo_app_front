@@ -3,18 +3,42 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'package:to_do_application/models/user_model/user_model.dart';
+import 'package:to_do_application/screens/email_verification_screen.dart';
 import 'package:to_do_application/screens/home_screen.dart';
 import 'package:to_do_application/screens/registration_screen.dart';
 import 'package:to_do_application/services/authentication/auth_service.dart';
 import 'package:to_do_application/services/authentication/cubit/authentication_cubit.dart';
 
-import 'registration_screen_test.mocks.dart';
+import '../auth_service/AuthService.mocks.dart';
 
 @GenerateNiceMocks([
   MockSpec<AuthService>(),
-  MockSpec<NavigatorObserver>(),
-  MockSpec<SecureStorageService>()
 ])
+class MockSecureStorageService implements SecureStorageService {
+  Map<String, String> storage = {};
+
+  @override
+  writeToken(String key, String value) async {
+    storage[key] = value;
+  }
+
+  @override
+  readToken(String key) async {
+    return storage[key];
+  }
+
+  @override
+  deleteAllTokens() async {
+    storage.clear();
+  }
+
+  @override
+  deleteToken(String key) async {
+    storage.remove(key);
+  }
+}
+
 void main() {
   group(
     'RegistrationScreen',
@@ -22,12 +46,16 @@ void main() {
       // initializing the mock and AuthenticationCubit for authentication logic tests
       late MockAuthService mockAuthService;
       late AuthenticationCubit authenticationCubit;
+      late MockSecureStorageService mockSecureStorageService;
 
       setUp(
         () {
           mockAuthService = MockAuthService();
           authenticationCubit = AuthenticationCubit();
+          mockSecureStorageService = MockSecureStorageService();
+
           authenticationCubit.authService = mockAuthService;
+          authenticationCubit.secureStorageService = mockSecureStorageService;
         },
       );
 
@@ -37,39 +65,82 @@ void main() {
         },
       );
 
-      testWidgets('Successful registration redirects to HomeScreen',
-          (WidgetTester tester) async {
-        // Mock successful registration response
-        when(mockAuthService.register(any, any, any, any)).thenAnswer(
-          (_) async => {'message': 'User registered successfully.'},
-        );
+      // testing registeratoin logic
+      testWidgets(
+        'Successful registration navigates to EmailVerificationScreen/HomeScreen and shows success message',
+        (WidgetTester tester) async {
+          final GlobalKey<NavigatorState> navigatorKey =
+              GlobalKey<NavigatorState>();
 
-        await tester.pumpWidget(
-          BlocProvider<AuthenticationCubit>(
-            create: (_) => authenticationCubit..checkAuthStatus(),
-            child: MaterialApp(
-              home: const RegistrationScreen(),
-              routes: {
-                '/home': (_) => const HomeScreen(),
-              },
+          final mockUser = UserModel(
+            email: 'test10@example.com',
+            name: 'User',
+            isVerified: false,
+          );
+
+          when(mockAuthService.register(any, any, any, any)).thenAnswer(
+            (_) async {
+              return {
+                'message':
+                    'User registered successfully. Please check your email for verification link.',
+                'access': 'your_access_token_value',
+                'refresh': 'your_refresh_token_value',
+                'user': mockUser,
+              };
+            },
+          );
+
+          final Authenticated state = Authenticated(
+              'User registered successfully. Please check your email for verification link.',
+              mockUser);
+
+          await tester.pumpWidget(
+            BlocProvider<AuthenticationCubit>(
+              create: (_) => authenticationCubit,
+              child: MaterialApp(
+                navigatorKey: navigatorKey,
+                home: const RegistrationScreen(),
+                routes: {
+                  '/home': (_) => const HomeScreen(),
+                  '/register': (context) => const RegistrationScreen(),
+                  '/verify-email': (_) => EmailVerificationScreen(
+                        email: state.user.email,
+                      ),
+                },
+              ),
             ),
-          ),
-        );
+          );
 
-        // Fill in the registration form
-        await tester.enterText(
-            find.byType(TextFormField).at(0), 'test10@example.com');
-        await tester.enterText(find.byType(TextFormField).at(1), 'password123');
-        await tester.enterText(find.byType(TextFormField).at(2), 'password123');
-        await tester.enterText(find.byType(TextFormField).at(3), 'Mehran');
+          // Perform the form validation and submission
+          await tester.enterText(
+              find.byType(TextFormField).at(0), 'test10@example.com');
+          await tester.enterText(
+              find.byType(TextFormField).at(1), 'password123');
+          await tester.enterText(
+              find.byType(TextFormField).at(2), 'password123');
+          await tester.enterText(find.byType(TextFormField).at(3), 'User');
 
-        // Tap the register button
-        await tester.tap(find.byType(ElevatedButton));
-        await tester.pumpAndSettle(); // Wait for animations to complete
+          await tester.tap(find.byType(ElevatedButton));
+          await tester.pumpAndSettle(const Duration(seconds: 1));
 
-        // Verify navigation to HomeScreen
-        expect(find.byType(HomeScreen), findsOneWidget);
-      });
+          expect(find.byType(SnackBar), findsOneWidget);
+
+          expect(
+              find.text(
+                  'User registered successfully. Please check your email for verification link.'),
+              findsOne);
+
+          if (mockUser.isVerified) {
+            expect(find.byType(HomeScreen), findsOneWidget);
+          } else {
+            expect(find.byType(EmailVerificationScreen), findsOneWidget);
+            expect(
+              find.text('Please check your email for a verification link.'),
+              findsOne,
+            );
+          }
+        },
+      );
 
       // testing the RegistrationScreen UI and elements
       testWidgets(
@@ -118,7 +189,7 @@ void main() {
               find.byType(TextFormField).at(1), 'password123');
           await tester.enterText(
               find.byType(TextFormField).at(2), 'password123');
-          await tester.enterText(find.byType(TextFormField).at(3), 'Mehran');
+          await tester.enterText(find.byType(TextFormField).at(3), 'User');
 
           await tester.tap(find.byType(ElevatedButton));
           await tester.pump();
@@ -127,62 +198,6 @@ void main() {
           expect(find.text('Please enter your password'), findsNothing);
           expect(find.text('Please confirm your password'), findsNothing);
           expect(find.text('Please enter your name'), findsNothing);
-        },
-      );
-
-      // testing registeratoin logic
-      testWidgets(
-        'Successful registration navigates to HomeScreen and shows success message',
-        (WidgetTester tester) async {
-          // Stub navigator methods to avoid MissingStubError.
-          // when(mockObserver.didPush(any, any)).thenReturn(null);
-          when(mockAuthService.register(any, any, any, any)).thenAnswer(
-            (_) async {
-              return {
-                'message':
-                    'User registered successfully. Please check your email for verification link.',
-                'access': 'your_access_token_value',
-                'refresh': 'your_refresh_token_value',
-              };
-            },
-          );
-          await tester.pumpWidget(
-            BlocProvider<AuthenticationCubit>(
-              create: (_) => authenticationCubit..checkAuthStatus(),
-              child: MaterialApp(
-                home: const RegistrationScreen(),
-                routes: {
-                  '/home': (_) => const HomeScreen(),
-                },
-              ),
-            ),
-          );
-
-          // Perform the form validation and submission
-          await tester.enterText(
-              find.byType(TextFormField).at(0), 'test10@example.com');
-          await tester.enterText(
-              find.byType(TextFormField).at(1), 'password123');
-          await tester.enterText(
-              find.byType(TextFormField).at(2), 'password123');
-          await tester.enterText(find.byType(TextFormField).at(3), 'Mehran');
-
-          await tester.tap(find.byType(ElevatedButton));
-          await tester.pump();
-
-          expect(find.byType(SnackBar), findsOneWidget);
-
-          // Wait for the registration to complete
-          await tester.pump(const Duration(seconds: 2));
-
-          // Check for success message in SnackBar
-          expect(
-              find.text(
-                  'User registered successfully. Please check your email for verification link.'),
-              findsOneWidget);
-
-          // Check for HomeScreen after successful registration
-          expect(find.byType(HomeScreen), findsOneWidget);
         },
       );
 
@@ -204,7 +219,7 @@ void main() {
             find.byType(TextFormField).at(0), 'test@example.com');
         await tester.enterText(find.byType(TextFormField).at(1), 'password123');
         await tester.enterText(find.byType(TextFormField).at(2), 'password123');
-        await tester.enterText(find.byType(TextFormField).at(3), 'Mehran');
+        await tester.enterText(find.byType(TextFormField).at(3), 'User');
 
         await tester.tap(find.byType(ElevatedButton));
         await tester.pump();

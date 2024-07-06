@@ -22,6 +22,15 @@ class Success extends AuthenticationState {
   List<Object> get props => [message];
 }
 
+class Authenticated extends Success {
+  final UserModel user;
+
+  const Authenticated(super.message, this.user);
+
+  @override
+  List<Object> get props => [message, user];
+}
+
 class Failure extends AuthenticationState {
   final String error;
 

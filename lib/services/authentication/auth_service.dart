@@ -1,9 +1,10 @@
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:to_do_application/models/user_model/user_model.dart';
 
 class AuthService {
-  final Dio _dio = Dio();
+  final dio.Dio _dio = dio.Dio();
   // Registration Logic
   Future<Map<String, dynamic>> register(
     String email,
@@ -23,9 +24,34 @@ class AuthService {
     );
 
     if (response.statusCode == 201) {
-      return response.data;
+      //parse the user's data and all the other data from the response
+      final user = UserModel.fromJson(response.data['user']);
+      final message = response.data['message'];
+      final access = response.data['access'];
+      final refresh = response.data['refresh'];
+      return {
+        'message': message,
+        'user': user,
+        'access': access,
+        'refresh': refresh,
+      };
     } else {
       throw Exception('Failed to register');
+    }
+  }
+
+  // resending verification email
+  Future<Map<String, dynamic>> resendVerificationEmail(String email) async {
+    final resendUrl = dotenv.env['API_RESEND_VERIFICATION_URL'];
+    final response = await _dio.post(
+      resendUrl!,
+      data: {'email': email},
+    );
+
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw Exception('Failed to resend verification email');
     }
   }
 
@@ -40,9 +66,42 @@ class AuthService {
       },
     );
     if (response.statusCode == 200) {
-      return response.data;
+      // do the same thing we did in register method
+      final user = UserModel.fromJson(response.data['user']);
+      final message = response.data['message'];
+      final access = response.data['access'];
+      final refresh = response.data['refresh'];
+      return {
+        'message': message,
+        'user': user,
+        'access': access,
+        'refresh': refresh,
+      };
     } else {
       throw Exception('Failed to login');
+    }
+  }
+
+  //get current user
+  Future<UserModel> getCurrentUser(String accessToken) async {
+    final getUserUrl = dotenv.env['API_GET_USER_URL'];
+    try {
+      final response = await _dio.get(
+        getUserUrl!,
+        options: dio.Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return UserModel.fromJson(response.data);
+      } else {
+        throw Exception('Failed to fetch current user');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:to_do_application/models/user_model/user_model.dart';
 import 'package:to_do_application/services/authentication/auth_service.dart';
 
 part 'authentication_state.dart';
@@ -9,7 +10,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthService authService = AuthService();
   SecureStorageService secureStorageService = SecureStorageService();
 
-  AuthenticationCubit() : super(AuthenticationInitial());
+  AuthenticationCubit() : super(LoggedOut()) {
+    init();
+  }
 
   Future<void> register({
     required String email,
@@ -27,15 +30,31 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         name,
       );
 
-      emit(Success(response['message']));
-
+      final user = response['user'] as UserModel;
       final accessToken = response['access'];
       final refreshToken = response['refresh'];
 
       await secureStorageService.writeToken('accessToken', accessToken);
       await secureStorageService.writeToken('refreshToken', refreshToken);
+
+      emit(Authenticated(response['message'], user));
     } catch (e) {
       emit(Failure('Failed to register: $e'));
+    }
+  }
+
+  Future<void> resendVerificationEmail({required String email}) async {
+    print('object');
+
+    try {
+      emit(Loading());
+      final response = await authService.resendVerificationEmail(email);
+      print('this is resend email : $response');
+      // final user = await getCurrentUser();
+      // print(user);
+      emit(Success(response['message']));
+    } catch (e) {
+      emit(Failure('Failed to resend verification email: $e'));
     }
   }
 
@@ -48,15 +67,47 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     try {
       final response = await authService.login(email, password);
 
+      final user = response['user'] as UserModel;
       final accessToken = response['access'];
       final refreshToken = response['refresh'];
 
       await secureStorageService.writeToken('accessToken', accessToken);
       await secureStorageService.writeToken('refreshToken', refreshToken);
 
-      emit(Success(response['message']));
+      emit(Authenticated(response['message'], user));
     } catch (e) {
       emit(Failure(e.toString()));
+    }
+  }
+
+  Future<UserModel?> getCurrentUser() async {
+    try {
+      final accessToken = await secureStorageService.readToken('accessToken');
+      final UserModel user = await authService.getCurrentUser(accessToken!);
+      emit(Authenticated('Welcome ${user.name}', user));
+      return user;
+    } catch (e) {
+      emit(Failure('Failed to fetch current user: $e'));
+      return null;
+    }
+  }
+
+  Future<bool> checkUserStatus() async {
+    emit(Loading());
+    final accessToken = await secureStorageService.readToken('accessToken');
+
+    try {
+      final UserModel user = await authService.getCurrentUser(accessToken!);
+      if (user.isVerified) {
+        emit(Authenticated('User is active', user));
+        return true;
+      } else {
+        emit(const Failure('User is not active'));
+        return false;
+      }
+    } catch (e) {
+      emit(Failure('Failed to check user status: $e'));
+      return false;
     }
   }
 
@@ -72,8 +123,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
       await secureStorageService.writeToken('accessToken', newAccessToken);
       await secureStorageService.writeToken('refreshToken', newRefreshToken);
-
-      emit(Success(response['message']));
 
       return true; // Refresh successful
     } catch (e) {
@@ -101,43 +150,22 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           bool isTokenValid = DateTime.now().isBefore(expirationDate);
           return isTokenValid;
         } else {
-          // Handle case where 'exp' is missing in token
-          print('Token does not contain expiration date.');
+          //TODO: Handle case where 'exp' is missing in token
           return false;
         }
       } catch (e) {
-        // Handle decoding errors
-        print('Error decoding token: $e');
+        //TODO: Handle decoding errors
         return false;
       }
     } else {
-      // Handle case where accessToken is null or empty
-      print('Access token is null or empty.');
+      //TODO: Handle case where accessToken is null or empty
       return false;
     }
   }
 
-  // Future<bool> isAccessTokenValid() async {
-  //   final accessToken = await secureStorageService.readToken('accessToken');
-  //   if (accessToken != null) {
-  //     try {
-  //       Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
-  //       // Check expiration
-  //       if (decodedToken['exp'] != null) {
-  //         DateTime expirationDate =
-  //             DateTime.fromMillisecondsSinceEpoch(decodedToken['exp'] * 1000);
-  //         bool isTokenValid = DateTime.now().isBefore(expirationDate);
-  //         return isTokenValid;
-  //       }
-  //     } catch (e) {
-  //       print(e.toString());
-  //       return false;
-  //     }
-  //   }
-  //   return false;
-  // }
-
   Future<void> checkAuthStatus() async {
+    emit(Loading());
+
     try {
       final accessToken = await secureStorageService.readToken('accessToken');
       final refreshToken = await secureStorageService.readToken('refreshToken');
@@ -158,6 +186,18 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       }
     } catch (e) {
       emit(Failure(e.toString()));
+    }
+  }
+
+  Future<void> init() async {
+    final user = await getCurrentUser();
+    if (user == null) {
+      emit(LoggedOut());
+    } else if (user.isVerified) {
+      emit(Authenticated('Welcome ${user.name}', user));
+    } else if (user.isVerified == false) {
+      emit(Authenticated(
+          'Welcome ${user.name}, please verifiy your email!', user));
     }
   }
 }

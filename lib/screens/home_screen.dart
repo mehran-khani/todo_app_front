@@ -25,11 +25,30 @@ class HomeScreen extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            return ElevatedButton(
-              onPressed: () async {
-                context.read<AuthenticationCubit>().logout();
-              },
-              child: Text('Log out'),
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        context.read<AuthenticationCubit>().logout();
+                      },
+                      child: Text('Log out'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final user = await context
+                            .read<AuthenticationCubit>()
+                            .getCurrentUser();
+                        //poor man debugging
+                        print(user!.email);
+                      },
+                      child: const Text('user'),
+                    )
+                  ],
+                ),
+              ),
             );
           },
         ),

@@ -27,7 +27,7 @@ class RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  Future<void> _submitForm() async {
+  Future<void> _submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       await context.read<AuthenticationCubit>().register(
             email: _emailController.text,
@@ -44,13 +44,14 @@ class RegistrationScreenState extends State<RegistrationScreen> {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
+                key: const Key('emailField'),
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
@@ -64,6 +65,7 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                 },
               ),
               TextFormField(
+                key: const Key('passwordField'),
                 controller: _passwordController,
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
@@ -75,6 +77,7 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                 },
               ),
               TextFormField(
+                key: const Key('confirmPasswordField'),
                 controller: _confirmPasswordController,
                 decoration:
                     const InputDecoration(labelText: 'Confirm Password'),
@@ -90,6 +93,7 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                 },
               ),
               TextFormField(
+                key: const Key('nameField'),
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) {
@@ -100,9 +104,9 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              BlocConsumer<AuthenticationCubit, AuthenticationState>(
+              BlocListener<AuthenticationCubit, AuthenticationState>(
                 listener: (context, state) async {
-                  if (state is Success) {
+                  if (state is Authenticated) {
                     // Show the success message in a SnackBar
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -110,22 +114,25 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                     );
 
-                    Navigator.pushReplacementNamed(context, '/home');
+                    if (state.user.isVerified) {
+                      Navigator.pushReplacementNamed(context, '/home');
+                    } else {
+                      Navigator.pushReplacementNamed(
+                        context,
+                        '/verify-email',
+                        arguments: state.user.email,
+                      );
+                    }
                   } else if (state is Failure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.error)),
                     );
                   }
                 },
-                builder: (context, state) {
-                  if (state is Loading) {
-                    return const CircularProgressIndicator();
-                  }
-                  return ElevatedButton(
-                    onPressed: _submitForm,
-                    child: const Text('Register'),
-                  );
-                },
+                child: ElevatedButton(
+                  onPressed: () async => await _submitForm(context),
+                  child: const Text('Register'),
+                ),
               ),
             ],
           ),
