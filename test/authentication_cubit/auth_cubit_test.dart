@@ -118,6 +118,29 @@ void main() {
               .having((state) => state.user.isVerified, 'isActive', false));
     });
 
+    test('Cubit Register Failure Test', () async {
+      const String email = 'invalid_email@gmail.com';
+      const String password = 'password123';
+      const String confirmPassword = 'password123';
+      const String name = 'User';
+
+      when(mockAuthService.register(email, password, confirmPassword, name))
+          .thenThrow(Exception('Registration failed.'));
+
+      await authenticationCubit.register(
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+        name: name,
+      );
+
+      expect(
+        authenticationCubit.state,
+        isA<Failure>().having((state) => state.error, 'message',
+            'Failed to register: Exception: Registration failed.'),
+      );
+    });
+
     test('Cubit Login Test', () async {
       const String email = 'test@gmail.com';
       const String password = 'password123';
@@ -145,6 +168,22 @@ void main() {
             .having((state) => state.user.email, 'email', email)
             .having((state) => state.user.name, 'name', 'User')
             .having((state) => state.user.isVerified, 'isActive', true),
+      );
+    });
+
+    test('Cubit Login Failure Test', () async {
+      const String email = 'invalid_email';
+      const String password = 'wrong_password';
+
+      when(mockAuthService.login(email, password))
+          .thenThrow(Exception('Login failed.'));
+
+      await authenticationCubit.login(email: email, password: password);
+
+      expect(
+        authenticationCubit.state,
+        isA<Failure>().having(
+            (state) => state.error, 'message', 'Exception: Login failed.'),
       );
     });
 
