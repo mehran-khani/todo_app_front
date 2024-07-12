@@ -46,7 +46,7 @@ void main() {
 
     test('Login Test', () async {
       const String email = 'write a valid and registered email here';
-      const String password = 'meri123';
+      const String password = 'User';
 
       final response = await authService.login(email, password);
 
@@ -57,12 +57,29 @@ void main() {
       expect(response['refresh'], isNotEmpty);
     });
 
+    test('login failure', () async {
+      const String email = 'invalid_email@gmail.com';
+      const String password = 'User';
+      try {
+        await authService.login(email, password);
+        fail('Expected a DioException but did not get one.');
+      } on DioException catch (e) {
+        // Assertions for DioException
+        expect(e.type, DioExceptionType.badResponse);
+        expect(e.response?.statusCode, 401);
+        expect(
+            e.message,
+            contains(
+                'Client error - the request contains bad syntax or cannot be fulfilled'));
+      }
+    });
+
     test('Refresh Token Test', () async {
       final authService = AuthService();
 
       // First, authenticate to get a real refresh token
       const String email = 'write a valid and registered email here';
-      const String password = 'meri123';
+      const String password = 'User';
 
       try {
         final loginResponse = await authService.login(email, password);
@@ -87,7 +104,7 @@ void main() {
       'Get Current User Test',
       () async {
         const String email = 'write a valid and registered email here';
-        const String password = 'meri123';
+        const String password = 'User';
 
         try {
           final loginResponse = await authService.login(email, password);
