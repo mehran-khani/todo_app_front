@@ -91,8 +91,10 @@ void main() {
           );
 
           final Authenticated state = Authenticated(
-              'User registered successfully. Please check your email for verification link.',
-              mockUser);
+              message:
+                  'User registered successfully. Please check your email for verification link.',
+              user: mockUser,
+              isLoading: false);
 
           await tester.pumpWidget(
             BlocProvider<AuthenticationCubit>(
@@ -156,7 +158,7 @@ void main() {
             ),
           );
           // Verify the initial state of the screen
-          expect(find.text('Register'), findsNWidgets(2));
+          expect(find.text('Register'), findsNWidgets(1));
           expect(find.byType(TextFormField), findsNWidgets(4));
           expect(find.byType(ElevatedButton), findsOneWidget);
         },
@@ -226,8 +228,7 @@ void main() {
 
         expect(find.byType(SnackBar), findsOneWidget);
 
-        expect(find.text('Failed to register: Exception: Registration failed'),
-            findsOneWidget);
+        expect(find.text('Exception: Registration failed'), findsOneWidget);
       });
     },
   );

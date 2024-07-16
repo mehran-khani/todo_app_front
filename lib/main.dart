@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:to_do_application/screens/email_verification_screen.dart';
 import 'package:to_do_application/screens/home_screen.dart';
+import 'package:to_do_application/screens/login_screen.dart';
 import 'package:to_do_application/screens/registration_screen.dart';
 import 'package:to_do_application/services/authentication/cubit/authentication_cubit.dart';
 
@@ -59,13 +60,9 @@ class Main extends StatelessWidget {
             return EmailVerificationScreen(email: state.user.email);
           }
         } else if (state is LoggedOut) {
-          return const RegistrationScreen();
+          return const LoginScreen();
         } else if (state is Success) {
           context.read<AuthenticationCubit>().init();
-        } else if (state is Loading) {
-          return const CircularProgressIndicator();
-        } else if (state is Failure) {
-          return Text(state.error);
         }
         return const Center(
           child: CircularProgressIndicator(),

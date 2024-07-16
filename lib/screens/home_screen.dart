@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
           listener: (context, state) {
             if (state is LoggedOut) {
               Navigator.pushReplacementNamed(context, '/register');
-            } else if (state is Failure) {
+            } else if (state.error != null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Error: ${state.error}'),
