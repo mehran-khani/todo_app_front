@@ -22,10 +22,10 @@ class EmailVerificationScreen extends StatelessWidget {
                 backgroundColor: Colors.green,
               ),
             );
-          } else if (state is Failure) {
+          } else if (state.error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.error),
+                content: Text(state.error ?? 'Something went wrong'),
                 backgroundColor: Colors.red,
               ),
             );

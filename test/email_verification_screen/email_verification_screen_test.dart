@@ -114,7 +114,7 @@ void main() {
         await tester.tap(find.text('Check User Status'));
         await tester.pump();
 
-        expect(authenticationCubit.state, isA<Failure>());
+        expect(authenticationCubit.state, isA<LoggedOut>());
       });
 
       testWidgets('navigates to HomeScreen if email is verified',

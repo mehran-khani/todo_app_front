@@ -136,8 +136,8 @@ void main() {
 
       expect(
         authenticationCubit.state,
-        isA<Failure>().having((state) => state.error, 'message',
-            'Failed to register: Exception: Registration failed.'),
+        isA<Registering>().having((state) => state.error, 'message',
+            'Exception: Registration failed.'),
       );
     });
 
@@ -182,7 +182,7 @@ void main() {
 
       expect(
         authenticationCubit.state,
-        isA<Failure>().having(
+        isA<LoggedOut>().having(
             (state) => state.error, 'message', 'Exception: Login failed.'),
       );
     });

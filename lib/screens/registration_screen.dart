@@ -104,13 +104,14 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              BlocListener<AuthenticationCubit, AuthenticationState>(
+              BlocConsumer<AuthenticationCubit, AuthenticationState>(
                 listener: (context, state) async {
                   if (state is Authenticated) {
                     // Show the success message in a SnackBar
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.message),
+                        backgroundColor: Colors.green,
                       ),
                     );
 
@@ -123,15 +124,19 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                         arguments: state.user.email,
                       );
                     }
-                  } else if (state is Failure) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.error)),
-                    );
+                  } else if (state is Registering && state.error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(state.error ??
+                          'Failed to register. Please try again'),
+                      backgroundColor: Colors.red,
+                    ));
                   }
                 },
-                child: ElevatedButton(
+                builder: (context, state) => ElevatedButton(
                   onPressed: () async => await _submitForm(context),
-                  child: const Text('Register'),
+                  child: state.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : const Text('Register'),
                 ),
               ),
             ],

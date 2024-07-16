@@ -58,27 +58,31 @@ class AuthService {
   // Login logics
   Future<Map<String, dynamic>> login(String email, String password) async {
     final loginUrl = dotenv.env['API_LOGIN_URL'];
-    final response = await _dio.post(
-      loginUrl!,
-      data: {
-        'email': email,
-        'password': password,
-      },
-    );
-    if (response.statusCode == 200) {
-      // do the same thing we did in register method
-      final user = UserModel.fromJson(response.data['user']);
-      final message = response.data['message'];
-      final access = response.data['access'];
-      final refresh = response.data['refresh'];
-      return {
-        'message': message,
-        'user': user,
-        'access': access,
-        'refresh': refresh,
-      };
-    } else {
-      throw Exception('Failed to login');
+    try {
+      final response = await _dio.post(
+        loginUrl!,
+        data: {
+          'email': email,
+          'password': password,
+        },
+      );
+      if (response.statusCode == 200) {
+        // do the same thing we did in register method
+        final user = UserModel.fromJson(response.data['user']);
+        final message = response.data['message'];
+        final access = response.data['access'];
+        final refresh = response.data['refresh'];
+        return {
+          'message': message,
+          'user': user,
+          'access': access,
+          'refresh': refresh,
+        };
+      } else {
+        throw Exception('Failed to login');
+      }
+    } catch (e) {
+      throw Exception(e);
     }
   }
 
