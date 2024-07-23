@@ -10,6 +10,63 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('HomeScreen'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
+      ),
+      drawer: Drawer(
+        child: BlocBuilder<AuthenticationCubit, AuthenticationState>(
+          builder: (context, state) {
+            String welcomeMessage = 'Welcome, Guest!';
+            if (state is Authenticated) {
+              welcomeMessage = 'Welcome, ${state.user.name}!';
+            }
+
+            return ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        welcomeMessage,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
+                  onTap: () {
+                    Navigator.pop(context); // Close the drawer
+                    context.read<AuthenticationCubit>().logout().then((_) {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    });
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings'),
+                  onTap: () {},
+                ),
+                // Add more menu items if needed
+              ],
+            );
+          },
+        ),
       ),
       body: Center(
         child: BlocConsumer<AuthenticationCubit, AuthenticationState>(
@@ -25,29 +82,10 @@ class HomeScreen extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            return Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        context.read<AuthenticationCubit>().logout();
-                      },
-                      child: Text('Log out'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final user = await context
-                            .read<AuthenticationCubit>()
-                            .getCurrentUser();
-                        //poor man debugging
-                        print(user!.email);
-                      },
-                      child: const Text('user'),
-                    )
-                  ],
-                ),
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [],
               ),
             );
           },

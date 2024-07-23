@@ -139,6 +139,13 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                       : const Text('Register'),
                 ),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
+                child: const Text('Go to Login'),
+              ),
             ],
           ),
         ),

@@ -100,6 +100,18 @@ class LoginScreenState extends State<LoginScreen> {
                           ? const Center(child: CircularProgressIndicator())
                           : const Text('Login'),
                     ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigator.pushNamedAndRemoveUntil(
+                        //     context, '/login', (route) => false);
+                        // Navigator.pushNamed(context, '/register');
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/register',
+                          (route) => route.isFirst,
+                        );
+                      },
+                      child: const Text('Go to Register'),
+                    ),
                   ],
                 ),
               ),
