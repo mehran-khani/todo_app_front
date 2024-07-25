@@ -29,96 +29,105 @@ class LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _submitForm(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      await context.read<AuthenticationCubit>().login(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthenticationCubit, AuthenticationState>(
-      listener: (context, state) {
-        if (state is Authenticated) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(state.message),
-            backgroundColor: Colors.green,
-          ));
-
-          Navigator.of(context).pushReplacementNamed('/home');
-        } else if (state is LoggedOut && state.error != null) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Failed to login: ${state.error}'),
-            backgroundColor: Colors.red,
-          ));
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(title: const Text('Login')),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'Enter your email',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
-                      ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 32.0),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (state.isLoading == false &&
-                            _formKey.currentState!.validate()) {
-                          await context.read<AuthenticationCubit>().login(
-                                email: _emailController.text.trim(),
-                                password: _passwordController.text.trim(),
-                              );
-                        }
-                      },
-                      child: state.isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : const Text('Login'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigator.pushNamedAndRemoveUntil(
-                        //     context, '/login', (route) => false);
-                        // Navigator.pushNamed(context, '/register');
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/register',
-                          (route) => route.isFirst,
-                        );
-                      },
-                      child: const Text('Go to Register'),
-                    ),
-                  ],
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  key: const Key('emailField'),
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
                 ),
-              ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  key: const Key('passwordField'),
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Enter your password',
+                  ),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 32.0),
+                BlocConsumer<AuthenticationCubit, AuthenticationState>(
+                  listener: (context, state) async {
+                    if (state is Authenticated) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+
+                      if (state.user.isVerified) {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      } else {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          '/verify-email',
+                          arguments: state.user.email,
+                        );
+                      }
+                    } else if (state is LoggedOut && state.error != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            state.error ?? 'Failed to Login. Please try again'),
+                        backgroundColor: Colors.red,
+                      ));
+                    }
+                  },
+                  builder: (context, state) => ElevatedButton(
+                    onPressed: () async => await _submitForm(context),
+                    child: state.isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : const Text('Login'),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/register',
+                      (route) => route.isFirst,
+                    );
+                  },
+                  child: const Text('Go to Register'),
+                ),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

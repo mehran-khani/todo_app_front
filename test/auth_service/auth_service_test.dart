@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:to_do_application/models/user_model/user_model.dart';
 import 'package:to_do_application/services/authentication/auth_service.dart';
 
+//TODO: replace marked emails to a valid and registered email
 void main() {
   late AuthService authService;
 

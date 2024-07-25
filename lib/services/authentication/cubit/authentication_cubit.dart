@@ -44,7 +44,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         user: user,
         message: response['message'],
         isLoading: false,
-        error: '',
+        error: null,
       ));
     } catch (e) {
       emit(Registering(isLoading: false, error: e.toString()));

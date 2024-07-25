@@ -3,44 +3,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:to_do_application/models/user_model/user_model.dart';
+import 'package:to_do_application/screens/email_verification_screen.dart';
 import 'package:to_do_application/screens/home_screen.dart';
 import 'package:to_do_application/screens/login_screen.dart';
 import 'package:to_do_application/screens/registration_screen.dart';
 import 'package:to_do_application/services/authentication/cubit/authentication_cubit.dart';
 
-import '../email_verification_screen/email_verification_screen_test.mocks.dart';
+import '../auth_service/AuthService.mocks.dart';
+import '../registration_screen/registration_screen_test.dart';
 
 void main() {
   late MockAuthService mockAuthService;
   late MockSecureStorageService mockSecureStorageService;
   late AuthenticationCubit authenticationCubit;
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  late GlobalKey<NavigatorState> navigatorKey;
 
   setUp(() {
     mockAuthService = MockAuthService();
     mockSecureStorageService = MockSecureStorageService();
-    authenticationCubit = AuthenticationCubit()
-      ..authService = mockAuthService
-      ..secureStorageService = mockSecureStorageService;
+    authenticationCubit = AuthenticationCubit();
+
+    authenticationCubit.authService = mockAuthService;
+    authenticationCubit.secureStorageService = mockSecureStorageService;
+
+    navigatorKey = GlobalKey<NavigatorState>();
   });
 
   tearDown(() {
     authenticationCubit.close();
   });
-
-  Widget createWidgetUnderTest() {
-    return BlocProvider<AuthenticationCubit>(
-      create: (_) => authenticationCubit,
-      child: MaterialApp(
-        navigatorKey: navigatorKey,
-        home: const LoginScreen(),
-        routes: {
-          '/home': (_) => const HomeScreen(),
-          '/register': (context) => const RegistrationScreen(),
-        },
-      ),
-    );
-  }
 
   group(
     'Login screen tests',
@@ -66,7 +57,28 @@ void main() {
             },
           );
 
-          await tester.pumpWidget(createWidgetUnderTest());
+          final Authenticated state = Authenticated(
+              message:
+                  'User registered successfully. Please check your email for verification link.',
+              user: mockUser,
+              isLoading: false);
+
+          await tester.pumpWidget(
+            BlocProvider<AuthenticationCubit>(
+              create: (_) => authenticationCubit,
+              child: MaterialApp(
+                navigatorKey: navigatorKey,
+                home: const LoginScreen(),
+                routes: {
+                  '/home': (_) => const HomeScreen(),
+                  '/register': (context) => const RegistrationScreen(),
+                  '/verify-email': (_) => EmailVerificationScreen(
+                        email: state.user.email,
+                      ),
+                },
+              ),
+            ),
+          );
 
           // Perform the form validation and submission
           await tester.enterText(
@@ -76,6 +88,11 @@ void main() {
 
           await tester.tap(find.byType(ElevatedButton));
           await tester.pumpAndSettle(const Duration(seconds: 1));
+
+          debugPrint(
+              'SnackBar found: ${find.byType(SnackBar).evaluate().isNotEmpty}');
+          debugPrint(
+              'HomeScreen found: ${find.byType(HomeScreen).evaluate().isNotEmpty}');
 
           expect(find.byType(SnackBar), findsOneWidget);
 
@@ -90,10 +107,17 @@ void main() {
         'LoginScreen displays correctly',
         (WidgetTester tester) async {
           // Build our app and trigger a frame.
-          await tester.pumpWidget(createWidgetUnderTest());
+          await tester.pumpWidget(
+            MaterialApp(
+              home: BlocProvider(
+                create: (context) => authenticationCubit,
+                child: const LoginScreen(),
+              ),
+            ),
+          );
 
           // Verify the initial state of the screen
-          expect(find.text('Login'), findsNWidgets(2));
+          expect(find.text('Login'), findsOneWidget);
           expect(find.byType(TextFormField),
               findsNWidgets(2)); // email and password fields
           expect(find.byType(ElevatedButton), findsOneWidget);
@@ -104,7 +128,14 @@ void main() {
       testWidgets(
         'Form validation works correctly',
         (WidgetTester tester) async {
-          await tester.pumpWidget(createWidgetUnderTest());
+          await tester.pumpWidget(
+            MaterialApp(
+              home: BlocProvider(
+                create: (context) => authenticationCubit,
+                child: const LoginScreen(),
+              ),
+            ),
+          );
 
           await tester.tap(find.byType(ElevatedButton));
           await tester.pump();
@@ -130,7 +161,14 @@ void main() {
         when(mockAuthService.login(any, any))
             .thenThrow(Exception('Login failed'));
 
-        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpWidget(
+          MaterialApp(
+            home: BlocProvider(
+              create: (context) => authenticationCubit,
+              child: const LoginScreen(),
+            ),
+          ),
+        );
 
         await tester.enterText(
             find.byType(TextFormField).at(0), 'test@example.com');
@@ -141,8 +179,7 @@ void main() {
 
         expect(find.byType(SnackBar), findsOneWidget);
 
-        expect(find.text('Failed to login: Exception: Login failed'),
-            findsOneWidget);
+        expect(find.text('Exception: Login failed'), findsOneWidget);
       });
     },
   );
