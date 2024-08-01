@@ -13,7 +13,7 @@ class TaskModel extends Equatable {
 
   @HiveField(2)
   final String description;
-
+// 'completed', 'incomplete', etc.
   @HiveField(3)
   final String status;
 
@@ -21,7 +21,10 @@ class TaskModel extends Equatable {
   final DateTime dueDate;
 
   @HiveField(5)
-  final List<String> tags;
+  final List<dynamic> tags;
+
+  @HiveField(6)
+  final bool isFlagged;
 
   const TaskModel({
     required this.id,
@@ -30,8 +33,32 @@ class TaskModel extends Equatable {
     required this.status,
     required this.dueDate,
     this.tags = const [],
+    this.isFlagged = false,
   });
 
+  TaskModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? status,
+    DateTime? dueDate,
+    List<dynamic>? tags,
+    bool? isFlagged,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      status: status ?? this.status,
+      dueDate: dueDate ?? this.dueDate,
+      tags: tags ?? this.tags,
+      isFlagged: isFlagged ?? this.isFlagged,
+    );
+  }
+
+// These methods are used for converting the TaskModel to and from a map representation.
+// This is useful for potential future integration with remote databases or APIs,
+// such as Firestore, where data needs to be serialized and deserialized as maps.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -40,6 +67,7 @@ class TaskModel extends Equatable {
       'status': status,
       'dueDate': dueDate.toIso8601String(),
       'tags': tags,
+      'isFlagged': isFlagged,
     };
   }
 
@@ -50,12 +78,21 @@ class TaskModel extends Equatable {
       description: map['description'],
       status: map['status'],
       dueDate: DateTime.parse(map['dueDate']),
-      tags: List<String>.from(map['tags']),
+      tags: List<dynamic>.from(map['tags']),
+      isFlagged: map['isFlagged'] ?? false,
     );
   }
-
+/////////////////////////////////////////////////////////////
   @override
-  List<Object> get props => [id, title, description, status, dueDate, tags];
+  List<Object> get props => [
+        id,
+        title,
+        description,
+        status,
+        dueDate,
+        tags,
+        isFlagged,
+      ];
 
   @override
   bool? get stringify => true;

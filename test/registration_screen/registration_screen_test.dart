@@ -164,7 +164,7 @@ void main() {
         },
       );
 
-      // testing the how how does our form reacts to users actions
+      // testing how does our form reacts to users actions
       testWidgets(
         'Form validation works correctly',
         (WidgetTester tester) async {

@@ -23,6 +23,15 @@ class TagLoaded extends TagState {
   List<Object> get props => [tags];
 }
 
+class TagEmpty extends TagState {
+  final String message;
+
+  const TagEmpty({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
 class TagError extends TagState {
   final String message;
 

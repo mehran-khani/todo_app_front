@@ -26,6 +26,15 @@ class TaskLoaded extends TaskState {
   List<Object> get props => [tasks];
 }
 
+class TaskEmpty extends TaskState {
+  final String message;
+
+  const TaskEmpty({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
 class TaskError extends TaskState {
   final String message;
 

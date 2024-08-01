@@ -1,16 +1,17 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
 part 'tag_model.g.dart';
 
 @HiveType(typeId: 1)
-class TagModel {
+class TagModel extends Equatable {
   @HiveField(0)
-  String id;
+  final String id;
 
   @HiveField(1)
-  String name;
+  final String name;
 
-  TagModel({required this.id, required this.name});
+  const TagModel({required this.id, required this.name});
 
   Map<String, dynamic> toMap() {
     return {
@@ -25,4 +26,10 @@ class TagModel {
       name: map['name'],
     );
   }
+
+  @override
+  List<Object> get props => [id, name];
+
+  @override
+  bool? get stringify => true;
 }

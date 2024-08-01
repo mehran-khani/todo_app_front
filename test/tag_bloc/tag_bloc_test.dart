@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:to_do_application/models/tag_model.dart/tag_model.dart';
+import 'package:to_do_application/models/tag_model/tag_model.dart';
 import 'package:to_do_application/services/tags/bloc/tag_bloc.dart';
 
 import 'tag_bloc_test.mocks.dart';
@@ -19,7 +19,7 @@ void main() {
       mockTagBox = MockBox();
       tagBloc = TagBloc(mockTagBox);
 
-      testTag = TagModel(
+      testTag = const TagModel(
         id: '1',
         name: 'Test Tag',
       );
@@ -59,26 +59,32 @@ void main() {
 
     group('AddTag', () {
       blocTest<TagBloc, TagState>(
-        'emits [TagLoaded] when a tag is added successfully',
+        'emits [TagLoaded] when tags are added successfully',
         build: () {
+          // Mock the box to initially return a list of tags
           when(mockTagBox.values).thenReturn([testTag]);
+          // Mock put method to succeed
           when(mockTagBox.put(any, any)).thenAnswer((_) async {});
           return tagBloc;
         },
-        act: (bloc) => bloc.add(AddTag(testTag)),
-        expect: () => [
-          TagLoaded([testTag]),
-        ],
+        act: (bloc) {
+          bloc.add(const AddTag(['New Tag']));
+        },
+        expect: () async {
+          verify(mockTagBox.put(any, argThat(isA<TagModel>()))).called(1);
+          return [
+            TagLoaded([testTag]),
+          ];
+        },
       );
-
       blocTest<TagBloc, TagState>(
-        'emits [TagError] when adding a tag fails',
+        'emits [TagError] when adding tags fails',
         build: () {
           when(mockTagBox.put(any, any))
               .thenThrow(Exception('Failed to add tag'));
           return tagBloc;
         },
-        act: (bloc) => bloc.add(AddTag(testTag)),
+        act: (bloc) => bloc.add(const AddTag(['New Tag'])),
         expect: () => [
           const TagError("Failed to add tag"),
         ],
@@ -144,13 +150,26 @@ void main() {
     blocTest<TagBloc, TagState>(
       'emits [TagLoading, TagLoaded([])] when no tags are present',
       build: () {
+        when(mockTagBox.values).thenReturn([testTag]);
+        return tagBloc;
+      },
+      act: (bloc) => bloc.add(LoadTags()),
+      expect: () => [
+        TagLoading(),
+        TagLoaded([testTag]),
+      ],
+    );
+
+    blocTest<TagBloc, TagState>(
+      'emits [TagLoading, TagEmpty] when no tags are present',
+      build: () {
         when(mockTagBox.values).thenReturn([]);
         return tagBloc;
       },
       act: (bloc) => bloc.add(LoadTags()),
       expect: () => [
         TagLoading(),
-        TagLoaded([]),
+        const TagEmpty(message: 'You do not have any Tag'),
       ],
     );
 
@@ -160,7 +179,7 @@ void main() {
         when(mockTagBox.put(any, any)).thenThrow(Exception('Unexpected error'));
         return tagBloc;
       },
-      act: (bloc) => bloc.add(AddTag(testTag)),
+      act: (bloc) => bloc.add(const AddTag(['New Tag'])),
       expect: () => [
         const TagError("Failed to add tag"),
       ],

@@ -1,50 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'task_model.dart';
+part of 'task_list_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TaskModelAdapter extends TypeAdapter<TaskModel> {
+class TaskListModelAdapter extends TypeAdapter<TaskListModel> {
   @override
-  final int typeId = 0;
+  final int typeId = 2;
 
   @override
-  TaskModel read(BinaryReader reader) {
+  TaskListModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return TaskModel(
+    return TaskListModel(
       id: fields[0] as String,
-      title: fields[1] as String,
-      description: fields[2] as String,
-      status: fields[3] as String,
-      dueDate: fields[4] as DateTime,
-      tags: (fields[5] as List).cast<dynamic>(),
-      isFlagged: fields[6] as bool,
+      name: fields[1] as String,
+      tasks: (fields[2] as List).cast<TaskModel>(),
+      theme: fields[3] as String,
+      icon: fields[4] as IconData,
     );
   }
 
   @override
-  void write(BinaryWriter writer, TaskModel obj) {
+  void write(BinaryWriter writer, TaskListModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.title)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.description)
+      ..write(obj.tasks)
       ..writeByte(3)
-      ..write(obj.status)
+      ..write(obj.theme)
       ..writeByte(4)
-      ..write(obj.dueDate)
-      ..writeByte(5)
-      ..write(obj.tags)
-      ..writeByte(6)
-      ..write(obj.isFlagged);
+      ..write(obj.icon);
   }
 
   @override
@@ -53,7 +47,7 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TaskModelAdapter &&
+      other is TaskListModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

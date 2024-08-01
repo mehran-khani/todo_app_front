@@ -13,12 +13,12 @@ sealed class TagEvent extends Equatable {
 class LoadTags extends TagEvent {}
 
 class AddTag extends TagEvent {
-  final TagModel tag;
+  final List<String> tags;
 
-  const AddTag(this.tag);
+  const AddTag(this.tags);
 
   @override
-  List<Object> get props => [tag];
+  List<Object> get props => [tags];
 }
 
 class UpdateTag extends TagEvent {
