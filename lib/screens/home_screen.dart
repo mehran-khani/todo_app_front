@@ -7,6 +7,7 @@ import 'package:to_do_application/screens/home_screen_widget/custom_task_list_se
 import 'package:to_do_application/screens/home_screen_widget/search_field.dart';
 import 'package:to_do_application/screens/home_screen_widget/tag_section.dart';
 import 'package:to_do_application/screens/home_screen_widget/task_summary_list.dart';
+import 'package:to_do_application/services/task_list/bloc/task_list_bloc.dart';
 import 'package:to_do_application/services/tasks/bloc/task_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _scrollController.addListener(_scrollListener);
     context.read<TaskBloc>().add(TaskReset());
+    context.read<TaskListBloc>().add(LoadTaskLists());
   }
 
   void _scrollListener() {
@@ -105,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
                   builder: (context) => const CreateTaskModal(),
                 );
               },
@@ -121,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
                   builder: (context) => const CreateTaskListModal(),
                 );
               },

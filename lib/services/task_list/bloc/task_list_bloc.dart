@@ -58,9 +58,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     }
   }
 
-  void _onDeleteTaskList(DeleteTaskList event, Emitter<TaskListState> emit) {
+//TODO: I will change the delete method to delete task lists with their id instead of name cuz it may lead to deleting multiple with same name
+  void _onDeleteTaskList(
+      DeleteTaskList event, Emitter<TaskListState> emit) async {
     try {
-      taskListBox.delete(event.name);
+      await taskListBox.delete(event.name);
       final taskLists = taskListBox.values.toList();
       emit(TaskListLoaded(taskLists));
     } catch (e) {

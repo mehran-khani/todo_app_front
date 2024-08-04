@@ -20,8 +20,8 @@ class TaskListModelAdapter extends TypeAdapter<TaskListModel> {
       id: fields[0] as String,
       name: fields[1] as String,
       tasks: (fields[2] as List).cast<TaskModel>(),
-      theme: fields[3] as String,
-      icon: fields[4] as IconData,
+      color: fields[3] as String,
+      icon: fields[4] as String,
     );
   }
 
@@ -36,7 +36,7 @@ class TaskListModelAdapter extends TypeAdapter<TaskListModel> {
       ..writeByte(2)
       ..write(obj.tasks)
       ..writeByte(3)
-      ..write(obj.theme)
+      ..write(obj.color)
       ..writeByte(4)
       ..write(obj.icon);
   }

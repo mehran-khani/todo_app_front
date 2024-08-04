@@ -22,7 +22,8 @@ class TaskListWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         final task = tasks[index];
         return Dismissible(
-          key: Key(task.id), // Unique key for each item
+          // Unique key for each item
+          key: Key(task.id),
           direction: DismissDirection.endToStart,
           onDismissed: (direction) {
             if (direction == DismissDirection.endToStart) {

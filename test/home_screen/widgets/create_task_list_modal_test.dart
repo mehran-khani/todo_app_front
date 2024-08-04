@@ -14,7 +14,7 @@ const TaskListModel mockTaskList = TaskListModel(
   id: '1',
   name: 'Test Task List',
   tasks: [],
-  theme: 'Default',
+  color: 'Default',
   icon: CupertinoIcons.list_bullet,
 );
 

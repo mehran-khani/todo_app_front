@@ -34,7 +34,7 @@ final taskLists = [
         isFlagged: true,
       )
     ],
-    theme: 'theme1',
+    color: 'theme1',
     icon: Icons.list,
   ),
   TaskListModel(
@@ -51,7 +51,7 @@ final taskLists = [
         isFlagged: false,
       )
     ],
-    theme: 'theme2',
+    color: 'theme2',
     icon: Icons.list_alt,
   ),
 ];

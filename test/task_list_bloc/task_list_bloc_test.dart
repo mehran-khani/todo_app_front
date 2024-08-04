@@ -27,7 +27,7 @@ void main() {
         id: '1',
         name: 'Test TaskList',
         tasks: [],
-        theme: 'Default',
+        color: 'Default',
         icon: CupertinoIcons.list_bullet,
       );
 
@@ -35,7 +35,7 @@ void main() {
         id: '2',
         name: 'New TaskList',
         tasks: [],
-        theme: 'Default',
+        color: 'Default',
         icon: CupertinoIcons.list_bullet,
       );
 
@@ -43,7 +43,7 @@ void main() {
         id: '3',
         name: 'Updated TaskList',
         tasks: [],
-        theme: 'Default',
+        color: 'Default',
         icon: CupertinoIcons.list_bullet,
       );
 

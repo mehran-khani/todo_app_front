@@ -20,6 +20,7 @@ class TaskSummaryList extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 8.0,
@@ -50,6 +51,7 @@ class TaskSummaryItem extends StatelessWidget {
             state is TaskLoaded ? _getTaskCount(category, state.tasks) : 0;
 
         return Card(
+          color: Colors.white,
           elevation: 4.0,
           child: InkWell(
             onTap: () {
