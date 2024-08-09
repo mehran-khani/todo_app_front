@@ -90,6 +90,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           isLoading: false,
           error: null));
     } catch (e) {
+      log('$e');
       emit(LoggedOut(isLoading: false, error: e.toString()));
     }
   }
@@ -161,7 +162,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> logout() async {
-    emit(const LoggedOut(isLoading: true));
     await secureStorageService.deleteAllTokens();
     emit(const LoggedOut(isLoading: false));
   }

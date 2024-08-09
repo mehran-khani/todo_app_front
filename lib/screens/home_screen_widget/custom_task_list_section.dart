@@ -67,16 +67,19 @@ class CustomTaskListSection extends StatelessWidget {
                         child: Column(
                           children: [
                             ListTile(
-                              leading: Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: taskColor.color,
-                                ),
-                                child: Icon(
-                                  taskIcon.iconData,
-                                  color: Colors.white,
+                              leading: Hero(
+                                tag: 'icon ${taskList.id}',
+                                child: Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: taskColor.color,
+                                  ),
+                                  child: Icon(
+                                    taskIcon.iconData,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                               title: Text(taskList.name),

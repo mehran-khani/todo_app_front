@@ -29,196 +29,198 @@ class CreateTaskListModalState extends State<CreateTaskListModal> {
   Widget build(BuildContext context) {
     return FractionallySizedBox(
       heightFactor: 0.88,
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(CupertinoIcons.multiply),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                const Text(
-                  'Create New List',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: const Icon(CupertinoIcons.check_mark),
-                  onPressed: () {
-                    // creating a new task list
-                    if (_nameController.text.isNotEmpty) {
-                      context.read<TaskListBloc>().add(
-                            AddTaskList(
-                              TaskListModel(
-                                id: const Uuid().v4(),
-                                name: _nameController.text.trim(),
-                                tasks: const [],
-                                color: _selectedColor.name,
-                                icon: _selectedIcon.name,
-                              ),
-                            ),
-                          );
-                      Navigator.of(context).pop();
-                    }
-                  },
-                ),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _selectedColor.color,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromARGB(140, 33, 149, 243),
-                            spreadRadius: 1,
-                            blurRadius: 12,
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        _selectedIcon.iconData,
-                        color: Colors.white,
-                        size: 78,
-                      ),
-                    ),
+                  IconButton(
+                    icon: const Icon(CupertinoIcons.xmark),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
-                  const SizedBox(
-                    height: 8,
+                  const Text(
+                    'Create New List',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: _nameController,
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(
-                        hintText: 'List Name',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(18.0),
-                      ),
-                    ),
+                  IconButton(
+                    icon: const Icon(CupertinoIcons.check_mark),
+                    onPressed: () {
+                      // creating a new task list
+                      if (_nameController.text.isNotEmpty) {
+                        context.read<TaskListBloc>().add(
+                              AddTaskList(
+                                TaskListModel(
+                                  id: const Uuid().v4(),
+                                  name: _nameController.text.trim(),
+                                  tasks: const [],
+                                  color: _selectedColor.name,
+                                  icon: _selectedIcon.name,
+                                ),
+                              ),
+                            );
+                        Navigator.of(context).pop();
+                      }
+                    },
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16.0),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _selectedColor.color,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color.fromARGB(140, 33, 149, 243),
+                              spreadRadius: 1,
+                              blurRadius: 12,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          _selectedIcon.iconData,
+                          color: Colors.white,
+                          size: 78,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        controller: _nameController,
+                        textAlign: TextAlign.center,
+                        decoration: const InputDecoration(
+                          hintText: 'List Name',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(18.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Wrap(
-                children: TaskListColor.values.map((color) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedColor = color;
-                      });
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.transparent,
-                            border: Border.all(
-                              color: _selectedColor == color
-                                  ? Colors.grey.shade400
-                                  : Colors.transparent,
-                              width: 3,
+              const SizedBox(height: 16.0),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Wrap(
+                  children: TaskListColor.values.map((color) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedColor = color;
+                        });
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.transparent,
+                              border: Border.all(
+                                color: _selectedColor == color
+                                    ? Colors.grey.shade400
+                                    : Colors.transparent,
+                                width: 3,
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: color.color,
-                            shape: BoxShape.circle,
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: color.color,
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Wrap(
-                children: TaskListIcon.values.map((icon) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedIcon = icon;
-                      });
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.transparent,
-                            border: Border.all(
+              const SizedBox(height: 16.0),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Wrap(
+                  children: TaskListIcon.values.map((icon) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedIcon = icon;
+                        });
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.transparent,
+                              border: Border.all(
+                                color: _selectedIcon == icon
+                                    ? _selectedColor.color
+                                    : Colors.transparent,
+                                width: 3,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
                               color: _selectedIcon == icon
                                   ? _selectedColor.color
-                                  : Colors.transparent,
-                              width: 3,
+                                  : Colors.grey.shade400,
+                            ),
+                            child: Icon(
+                              icon.iconData,
+                              color: Colors.white,
                             ),
                           ),
-                        ),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _selectedIcon == icon
-                                ? _selectedColor.color
-                                : Colors.grey.shade400,
-                          ),
-                          child: Icon(
-                            icon.iconData,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

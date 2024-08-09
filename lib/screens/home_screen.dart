@@ -7,6 +7,7 @@ import 'package:to_do_application/screens/home_screen_widget/custom_task_list_se
 import 'package:to_do_application/screens/home_screen_widget/search_field.dart';
 import 'package:to_do_application/screens/home_screen_widget/tag_section.dart';
 import 'package:to_do_application/screens/home_screen_widget/task_summary_list.dart';
+import 'package:to_do_application/services/authentication/cubit/authentication_cubit.dart';
 import 'package:to_do_application/services/task_list/bloc/task_list_bloc.dart';
 import 'package:to_do_application/services/tasks/bloc/task_bloc.dart';
 
@@ -68,12 +69,21 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 6.0, top: 16),
+            padding: const EdgeInsets.all(8.0),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                try {
+                  context.read<AuthenticationCubit>().logout();
+                  Navigator.of(context).pushReplacementNamed('/login');
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Logout failed: $e')),
+                  );
+                }
+              },
               icon: const Icon(
-                CupertinoIcons.ellipsis_circle,
-                size: 28,
+                CupertinoIcons.square_arrow_left,
+                size: 26,
                 color: Colors.blue,
               ),
             ),

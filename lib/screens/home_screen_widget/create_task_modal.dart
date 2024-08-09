@@ -50,7 +50,7 @@ class CreateTaskModalState extends State<CreateTaskModal> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(CupertinoIcons.multiply),
+                  icon: const Icon(CupertinoIcons.xmark),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 const Text(
